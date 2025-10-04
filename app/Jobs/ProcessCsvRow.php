@@ -2,38 +2,49 @@
 
 namespace App\Jobs;
 
+use App\Models\CsvJob;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class ProcessCsvRow implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $row;
+    public $jobId;
 
-    // Retry 3 times if failed
-    public $tries = 3;
-    public $backoff = 10; // seconds before retry
-
-    public function __construct(array $row)
+    public function __construct($jobId)
     {
-        $this->row = $row;
+        $this->jobId = $jobId;
     }
 
     public function handle()
     {
-        // Example: store data into DB
-        try {
-            \DB::table('csv_data')->insert($this->row);
+        $jobRecord = CsvJob::find($this->jobId);
 
-            Log::info('Row processed:', $this->row);
+        if (!$jobRecord) return;
+
+        // Mark as processing
+        $jobRecord->status = 'processing';
+        $jobRecord->save();
+
+        try {
+            $row = $jobRecord->data;
+
+            // Example processing: save to another collection
+            \DB::connection('mongodb')->collection('processed_data')->insert($row);
+
+            // Mark as completed
+            $jobRecord->status = 'completed';
+            $jobRecord->save();
         } catch (\Exception $e) {
-            Log::error('Error processing row: '.$e->getMessage(), $this->row);
-            throw $e; // will trigger retry
+            $jobRecord->status = 'failed';
+            $jobRecord->error_message = $e->getMessage();
+            $jobRecord->save();
+
+            throw $e;
         }
     }
 }
