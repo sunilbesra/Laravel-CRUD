@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mongodb'),
+    'default' => env('DB_CONNECTION'),
 
     /*
     |--------------------------------------------------------------------------
@@ -98,19 +98,12 @@ return [
             'sslmode' => 'prefer',
         ],
 
-       'mongodb' => [
-    'driver'   => 'mongodb',
-    'host'     => env('DB_HOST', '127.0.0.1'),
-    'port'     => env('DB_PORT', 27017),
-    'dsn' => env('MONGODB_URI', 'mongodb://localhost:27017'),
-    'database' => env('DB_DATABASE', 'myapp_db'),
-    'username' => env('DB_USERNAME', 'sunil'),
-    'password' => env('DB_PASSWORD', 'password123'),
-    'options'  => [
-        'authSource' => env('DB_AUTHENTICATION_DATABASE', 'admin'), // where user was created
-        'ssl' => false, // set true if you use TLS/SSL
-    ],
-],
+        'mongodb' => [
+            'driver'   => 'mongodb',
+            'dsn'      => env('DB_URI'),
+            'database' => env('DB_DATABASE'),
+            ],
+
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',
