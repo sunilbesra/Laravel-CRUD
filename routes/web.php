@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
-
+use App\Http\Controllers\CsvController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -30,3 +30,7 @@ Route::put('/posts/{id}', [PostController::class, 'update'])->name('posts.update
 
 // Delete a post
 Route::delete('/posts/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
+
+
+Route::get('upload-csv', [CsvController::class, 'showForm']);
+Route::post('upload-csv', [CsvController::class, 'upload'])->name('csv.upload');
