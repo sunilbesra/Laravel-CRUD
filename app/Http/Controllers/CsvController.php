@@ -12,10 +12,18 @@ class CsvController extends Controller
     /**
      * Show CSV upload form.
      */
-    public function showForm()
-    {
-        return view('upload_csv');
-    }
+  public function showForm()
+{
+    $progress = [
+        'queued' => CsvJob::where('status', 'queued')->count(),
+        'processing' => CsvJob::where('status', 'processing')->count(),
+        'completed' => CsvJob::where('status', 'completed')->count(),
+        'failed' => CsvJob::where('status', 'failed')->count(),
+    ];
+
+    return view('upload_csv', compact('progress'));
+}
+
 
     /**
      * Handle CSV upload and dispatch jobs to Beanstalkd.

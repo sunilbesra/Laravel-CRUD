@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload CSV</title>
     <style>
-        /* Reset some default styles */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -16,10 +15,11 @@
         body {
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
             background: linear-gradient(135deg, #6a11cb, #2575fc);
             color: #333;
+            padding-top: 50px;
         }
 
         .container {
@@ -28,7 +28,7 @@
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             width: 100%;
-            max-width: 500px;
+            max-width: 700px;
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -85,6 +85,38 @@
             font-weight: bold;
         }
 
+        .progress-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .progress-box {
+            flex: 1;
+            margin: 0 5px;
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .progress-box:hover {
+            transform: translateY(-2px);
+        }
+
+        .progress-box h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .progress-box p {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2575fc;
+        }
+
         @media(max-width: 600px) {
             .container {
                 padding: 30px 20px;
@@ -92,6 +124,14 @@
 
             h1 {
                 font-size: 24px;
+            }
+
+            .progress-container {
+                flex-direction: column;
+            }
+
+            .progress-box {
+                margin: 10px 0;
             }
         }
     </style>
@@ -109,6 +149,27 @@
             <input type="file" name="csv_file" accept=".csv" required>
             <button type="submit">Upload</button>
         </form>
+
+        @isset($progress)
+        <div class="progress-container">
+            <div class="progress-box">
+                <h3>Queued</h3>
+                <p>{{ $progress['queued'] }}</p>
+            </div>
+            <div class="progress-box">
+                <h3>Processing</h3>
+                <p>{{ $progress['processing'] }}</p>
+            </div>
+            <div class="progress-box">
+                <h3>Completed</h3>
+                <p>{{ $progress['completed'] }}</p>
+            </div>
+            <div class="progress-box">
+                <h3>Failed</h3>
+                <p>{{ $progress['failed'] }}</p>
+            </div>
+        </div>
+        @endisset
     </div>
 </body>
 </html>
