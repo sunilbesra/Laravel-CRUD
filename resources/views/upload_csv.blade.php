@@ -19,7 +19,7 @@
             min-height: 100vh;
             background: linear-gradient(135deg, #6a11cb, #2575fc);
             color: #333;
-            padding-top: 50px;
+            padding: 50px 15px;
         }
 
         .container {
@@ -28,7 +28,7 @@
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             width: 100%;
-            max-width: 700px;
+            max-width: 1000px;
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -90,11 +90,13 @@
             justify-content: space-between;
             margin-top: 30px;
             text-align: center;
+            flex-wrap: wrap;
         }
 
         .progress-box {
             flex: 1;
-            margin: 0 5px;
+            min-width: 120px;
+            margin: 5px;
             background: #f4f4f4;
             padding: 15px;
             border-radius: 8px;
@@ -117,7 +119,69 @@
             color: #2575fc;
         }
 
-        @media(max-width: 600px) {
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        table th {
+            background-color: #6a11cb;
+            color: white;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        ul.pagination {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        ul.pagination li {
+            margin: 0 5px;
+        }
+
+        ul.pagination li a,
+        ul.pagination li span {
+            display: block;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #f4f4f4;
+            color: #2575fc;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        ul.pagination li a:hover {
+            background: #2575fc;
+            color: #fff;
+        }
+
+        ul.pagination .active span {
+            background: #2575fc;
+            color: #fff;
+        }
+
+        @media(max-width: 768px) {
             .container {
                 padding: 30px 20px;
             }
@@ -133,7 +197,46 @@
             .progress-box {
                 margin: 10px 0;
             }
+
+            table th, table td {
+                font-size: 12px;
+                padding: 8px;
+            }
         }
+
+        ul.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+ul.pagination li {
+    margin: 0 5px;
+}
+
+ul.pagination li a,
+ul.pagination li span {
+    display: block;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #f4f4f4;
+    color: #2575fc;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+ul.pagination li a:hover {
+    background: #2575fc;
+    color: #fff;
+}
+
+ul.pagination .active span {
+    background: #2575fc;
+    color: #fff;
+}
+
     </style>
 </head>
 <body>
@@ -168,6 +271,41 @@
                 <h3>Failed</h3>
                 <p>{{ $progress['failed'] }}</p>
             </div>
+        </div>
+        @endisset
+
+        @isset($csvJobs)
+        <h1 style="margin-top: 40px;">All CSV Jobs</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>File Name</th>
+                    <th>Row Identifier</th>
+                    <th>Status</th>
+                    <th>Data</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($csvJobs as $job)
+                <tr>
+                    <td>{{ $loop->iteration + ($csvJobs->currentPage() - 1) * $csvJobs->perPage() }}</td>
+                    <td>{{ $job->file_name ?? '-' }}</td>
+                    <td>{{ $job->row_identifier ?? '-' }}</td>
+                    <td>{{ $job->status }}</td>
+                    <td><pre>{{ json_encode($job->data, JSON_PRETTY_PRINT) }}</pre></td>
+                    <td>{{ $job->created_at }}</td>
+                    <td>{{ $job->updated_at }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        <div>
+            {{ $csvJobs->links('pagination::simple-default') }}
+
         </div>
         @endisset
     </div>

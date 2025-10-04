@@ -21,8 +21,12 @@ class CsvController extends Controller
         'failed' => CsvJob::where('status', 'failed')->count(),
     ];
 
-    return view('upload_csv', compact('progress'));
+    // Paginate CSV jobs, 10 per page
+    $csvJobs = CsvJob::orderBy('created_at', 'desc')->paginate(10);
+
+    return view('upload_csv', compact('progress', 'csvJobs'));
 }
+
 
 
     /**
